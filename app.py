@@ -52,7 +52,7 @@ def password_strength(password):
     return strength,criteria
 
 
-st.title("Password Strength Checker")
+st.title("🔒Password Strength Checker")
 st.write("This app checks the strength of your password based on the following criteria:")
 
 password = st.text_input("Enter your password", type="password")
