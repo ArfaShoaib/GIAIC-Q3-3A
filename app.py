@@ -1,3 +1,4 @@
+import secrets
 import streamlit as st
 import re 
 import string
@@ -47,9 +48,14 @@ def password_strength(password):
 
 
     strength_levels = ["very weak", "weak", "moderate", "strong", "very strong", "extremely strong"]
-    strength = strength_levels[score] if score < len(strength_levels) else "Excellent"
+    strength = strength_levels[min(score, len(strength_levels) - 1)]
 
-    return strength,criteria
+    return strength,criteria,score
+
+def generate_password(length=15):
+    characters = string.ascii_letters  + string.digits + string.punctuation
+    return "".join(secrets.choice(characters) for i in range(length))
+    
 
 
 st.title("🔒Password Strength Checker")
@@ -58,7 +64,11 @@ st.write("This app checks the strength of your password based on the following c
 password = st.text_input("Enter your password", type="password")
 
 if password:
-    strength , criteria = password_strength(password)
+    strength , criteria , score = password_strength(password)
+
+
+    progress_value = score / len(criteria) 
+    st.progress(progress_value)
 
     strength_class = "weak" if strength in ["very weak", "weak"] else "moderate" if strength == "moderate" else "strong"
 
@@ -69,13 +79,13 @@ if password:
         st.write(f"- {criterion}: {'✅' if satisfied else '❌'}")
 
     if strength in ["very weak", "weak"]:
-        st.write("Please consider using a stronger password.")
+       st.write("Please consider using a stronger password.")
 
-    elif strength == ["moderate", "strong"]:
-        st.write("Good job! Your password is strong enough.")
+    elif strength in ["moderate", "strong"]:
+         st.write("Good job! Your password is strong enough.")
 
-    elif strength == ["very strong", "extremely strong"]:
-        st.write("Excellent! Your password is very strong.")
+    elif strength in ["very strong", "extremely strong"]:
+         st.write("Excellent! Your password is very strong.")
 
     else:
-        st.write("Please consider using a stronger password.")
+         st.write("Please consider using a stronger password.")
